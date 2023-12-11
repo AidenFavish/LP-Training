@@ -1,23 +1,26 @@
 //
-//  ContentView.swift
+//  LPTrainingEnv.swift
 //  LP Training
 //
-//  Created by Aiden Favish on 12/7/23.
+//  Created by Aiden Favish on 12/9/23.
 //
 
 import SwiftUI
-
 
 enum selectorFocus {
     case CENTER, RADIUS, TURN
 }
 
-struct ContentView: View {
-    var img: NSImage = NSImage(contentsOfFile: "/Users/aidenfavish/Downloads/carl.png")!
+struct LPTrainingEnv: View {
+    // Parameters
+    @State var address: String
+    
+    // Local
     @State var center = (-1, -1)
     @State var radius = -1
     @State var turn = 0.0
     @State var focus: selectorFocus = selectorFocus.CENTER
+    @State var frameNum = 0
     var body: some View {
         HStack {
             Spacer()
@@ -28,16 +31,30 @@ struct ContentView: View {
                     .foregroundStyle(.blue)
                     .font(.title)
                     .bold(focus == selectorFocus.CENTER)
+                    .onTapGesture {
+                        focus = .CENTER
+                        center = (-1, -1)
+                        radius = -1
+                        turn = 0.0
+                    }
                 Text(center.0 == -1 ? "X: --     Y: --" : "x: \(center.0)     Y: \(center.1)")
                     .foregroundStyle(.blue)
                     .padding(.bottom)
                     .font(.title3)
+                    
                 
                 
                 Label("Radius", systemImage: "2.circle.fill")
                     .foregroundStyle(radius == -1 ? .gray : .blue)
                     .font(.title)
                     .bold(focus == selectorFocus.RADIUS)
+                    .onTapGesture {
+                        if focus == selectorFocus.TURN {
+                            focus = .RADIUS
+                            radius = -1
+                            turn = 0.0
+                        }
+                    }
                 Text(radius == -1 ? "R: --" : "r: \(radius)")
                     .foregroundStyle(radius == -1 ? .gray : .blue)
                     .padding(.bottom)
@@ -57,7 +74,7 @@ struct ContentView: View {
                     .font(.title3)
                 Spacer()
                 
-                Text("File: \(0)")
+                Text("File: \(frameNum)")
                     .font(.title3)
                     .foregroundStyle(.primary)
                 Text("Timestamp: \(0)")
@@ -74,20 +91,21 @@ struct ContentView: View {
                             .padding(.horizontal)
                             .padding(.vertical, 5)
                             .background(Color(NSColor(calibratedRed: 0.25, green: 0.25, blue: 0.25, alpha: 1)))
-                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                     })
                     .buttonStyle(PlainButtonStyle())
                     .padding()
                     
                     Button(action: {
-                        
+                        // Save
+                        frameNum += 1
                     }, label: {
                         Text(" Next")
                             .font(.title3)
                             .padding(.horizontal)
                             .padding(.vertical, 5)
                             .background(.blue)
-                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                             
                     })
                     .buttonStyle(PlainButtonStyle())
@@ -105,7 +123,7 @@ struct ContentView: View {
             Spacer()
             
             GeometryReader { geo in
-                Image(nsImage: img)
+                Image(nsImage: NSImage(contentsOfFile: address.replacingOccurrences(of: "%20", with: " ") + "frame\(frameNum).0.jpg")!)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .onTapGesture { click in
@@ -132,10 +150,6 @@ struct ContentView: View {
             
         }
     }
-}
-
-#Preview {
-    ContentView()
 }
 
 
